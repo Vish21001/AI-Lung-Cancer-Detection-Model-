@@ -2,16 +2,13 @@ import os
 import cv2
 import numpy as np
 import pandas as pd
+from tensorflow.keras.utils import to_categorical
 
 DATA_DIR = "data/"
-IMG_SIZE = 128  # Resize CT scans
-ANNOTATIONS_FILE = "annotations.csv"  # CSV with nodule labels
+IMG_SIZE = 128
+ANNOTATIONS_FILE = "annotations.csv"
 
 def load_images():
-    """
-    Load images and labels from LIDC-IDRI dataset
-    Assumes annotations.csv has columns: filename, label (0=healthy, 1=cancer)
-    """
     df = pd.read_csv(ANNOTATIONS_FILE)
     images = []
     labels = []
@@ -23,5 +20,5 @@ def load_images():
             images.append(img)
             labels.append(row['label'])
     images = np.array(images).reshape(-1, IMG_SIZE, IMG_SIZE, 1)/255.0
-    labels = np.array(labels)
+    labels = to_categorical(np.array(labels), num_classes=3)
     return images, labels
