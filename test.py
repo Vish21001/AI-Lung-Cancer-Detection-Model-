@@ -1,10 +1,12 @@
 from tensorflow.keras.models import load_model
 from preprocess import load_images
-from sklearn.metrics import accuracy_score, classification_report
+import numpy as np
+from sklearn.metrics import classification_report, confusion_matrix
 
-model = load_model("lung_cancer_lidc_model.h5")
-X, y = load_images()
+model = load_model("lung_cancer_multiclass_model.h5")
+X, y_true = load_images()
+y_pred = np.argmax(model.predict(X), axis=1)
+y_true_labels = np.argmax(y_true, axis=1)
 
-y_pred = (model.predict(X) > 0.5).astype("int32")
-print("Accuracy:", accuracy_score(y, y_pred))
-print(classification_report(y, y_pred, target_names=["Healthy", "Cancer"]))
+print("Classification Report:\n", classification_report(y_true_labels, y_pred, target_names=["Healthy","Benign","Malignant"]))
+print("Confusion Matrix:\n", confusion_matrix(y_true_labels, y_pred))
